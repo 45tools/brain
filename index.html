@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#E9EFEA">
+<meta name="theme-color" content="#EEF6FF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="45 Brain">
@@ -11,27 +11,35 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap">
 <title>45 Brain</title>
 <style>
 :root{
-  --bg:#E9EFEA; --panel:#FFFFFF; --ink:#13241A; --muted:#5A6D61; --line:#CFDAD2; --accent:#1C6A43; --accent-ink:#FFFFFF;
-  --field:#2A7849; --soft:#E5EFE8; --strong:#13241A; --strong-ink:#FFFFFF; --danger:#D7263D; --star:#E0A100;
-  --fill:#2F5FD8; --g0:#2F5FD8; --g1:#E8833A; --lit:#FFD24D; --ok:#1E9E5A;
+  /* あそびの配色：ゲームごとに色を変える（タブ・ボタン・選択中のチップ） */
+  --bg:#EEF6FF; --dot:#DCE8FA; --panel:#FFFFFF; --ink:#1E2445; --muted:#66708F; --line:#D8E2F2; --soft:#F1F5FC;
+  --strong:#1E2445; --strong-ink:#FFFFFF; --danger:#F0435A; --star:#FFB21E; --ok:#1DB765;
+  --c-count:#3D7BFF; --c-add:#1DB765; --c-flash:#FF8F1F; --c-hb:#9B5CF6; --c-clock:#FF4F8B;
+  --accent:var(--c-count); --accent-ink:#FFFFFF; --field:#3D7BFF;
+  --fill:#3D7BFF; --g0:#3D7BFF; --g1:#FF8A3D; --lit:#FFD23F; --S:#FF8F1F; --B:#1DB765;
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg:#0E1913; --panel:#17261D; --ink:#E5EFE8; --muted:#97AE9F; --line:#2A3D31; --accent:#58C389; --accent-ink:#0E1913; --soft:#1E3326; --strong:#E5EFE8; --strong-ink:#0E1913; --danger:#FF6B7A; --star:#FFD24D;
-    --fill:#5B86F0; --g0:#4D78E8; --g1:#E8833A; --lit:#FFD24D; --ok:#3CC47C; }
+  :root{ --bg:#141A2E; --dot:#1C2440; --panel:#1F2742; --ink:#EEF2FF; --muted:#A5AECB; --line:#333E62; --soft:#27304F; --strong:#EEF2FF; --strong-ink:#141A2E;
+    --danger:#FF6177; --star:#FFC23D; --ok:#33D17E;
+    --c-count:#5B8FFF; --c-add:#2DC873; --c-flash:#FF9B33; --c-hb:#A979FF; --c-clock:#FF6B9E;
+    --fill:#5B8FFF; --g0:#5B8FFF; --g1:#FF9550; --lit:#FFD23F; --S:#FF9B33; --B:#2DC873; color-scheme:dark; }
 }
+body[data-mode="add"]{--accent:var(--c-add)} body[data-mode="flash"]{--accent:var(--c-flash)}
+body[data-mode="hb"]{--accent:var(--c-hb)} body[data-mode="clock"]{--accent:var(--c-clock)}
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{touch-action:manipulation;-webkit-text-size-adjust:100%;background:var(--bg)}
 html,body{margin:0}
 body{min-height:100vh;padding:calc(env(safe-area-inset-top,0px) + 8px) env(safe-area-inset-right) 0 env(safe-area-inset-left);background:var(--bg);color:var(--ink);
-  font-family:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang TC","PingFang SC",system-ui,sans-serif;overscroll-behavior:none}
+  background-image:radial-gradient(var(--dot) 1.4px,transparent 1.6px);background-size:22px 22px;background-attachment:fixed;
+  font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang TC","PingFang SC",system-ui,sans-serif;overscroll-behavior:none}
 button,select,input,textarea{font:inherit;color:inherit}
 button,select,label{touch-action:manipulation;cursor:pointer}
 [hidden]{display:none!important}
-.num{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700}
+.num{font-family:"Fredoka","M PLUS Rounded 1c",system-ui,sans-serif;font-weight:600;font-variant-numeric:tabular-nums}
 .ic{display:inline-flex;width:20px;height:20px;flex:none}
 .ic svg{width:100%;height:100%}
 button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -39,20 +47,26 @@ button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{ou
 
 .bar{display:flex;align-items:center;gap:6px;padding:8px 10px;max-width:720px;margin:0 auto}
 .bar .sp{flex:1;min-width:4px}
-.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;min-height:44px;padding:0 14px;font-size:14px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;color:var(--ink);text-decoration:none}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:14px;min-height:44px;padding:0 14px;font-size:14px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;color:var(--ink);text-decoration:none}
 .btn.icon{width:46px;padding:0;min-height:40px}
 .btn:active:not(:disabled){transform:translateY(1px)}
 .btn:disabled{opacity:.4}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:800;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 65%,#000)}
+.btn.primary:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 65%,#000)}
 .btn.big{min-height:52px;font-size:17px;padding:0 28px}
 .btn[aria-expanded="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);flex:none;min-width:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel);flex:none;min-width:0}
 .tabs{flex:0 1 auto}
 .tabs button{flex:1 1 0;border:0;background:transparent;min-height:46px;min-width:0;width:58px;padding:4px 6px;font-size:11px;font-weight:500;white-space:nowrap;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink)}
 .tabs button + button{border-left:1px solid var(--line)}
 .tabs .ic{width:20px;height:20px}
+.tabs [data-mode="count"]{--tc:var(--c-count)} .tabs [data-mode="add"]{--tc:var(--c-add)} .tabs [data-mode="flash"]{--tc:var(--c-flash)}
+.tabs [data-mode="hb"]{--tc:var(--c-hb)} .tabs [data-mode="clock"]{--tc:var(--c-clock)}
+.tabs button .ic{color:var(--tc)}
 body[data-mode="count"] .tabs [data-mode="count"],body[data-mode="add"] .tabs [data-mode="add"],body[data-mode="flash"] .tabs [data-mode="flash"],
-body[data-mode="hb"] .tabs [data-mode="hb"],body[data-mode="clock"] .tabs [data-mode="clock"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+body[data-mode="hb"] .tabs [data-mode="hb"],body[data-mode="clock"] .tabs [data-mode="clock"]{background:var(--tc);color:#fff;font-weight:800}
+body[data-mode="count"] .tabs [data-mode="count"] .ic,body[data-mode="add"] .tabs [data-mode="add"] .ic,body[data-mode="flash"] .tabs [data-mode="flash"] .ic,
+body[data-mode="hb"] .tabs [data-mode="hb"] .ic,body[data-mode="clock"] .tabs [data-mode="clock"] .ic{color:#fff}
 
 .menu{position:fixed;right:max(10px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 66px);z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:14px;
   box-shadow:0 10px 30px rgba(10,30,18,.25);padding:6px;display:flex;flex-direction:column;min-width:260px;max-height:calc(100vh - 90px);overflow:auto}
@@ -65,14 +79,14 @@ body[data-mode="hb"] .tabs [data-mode="hb"],body[data-mode="clock"] .tabs [data-
 .mi select{margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 6px;font-size:13px;color:var(--ink)}
 .scrim{position:fixed;inset:0;z-index:55}
 
-.panel{margin:8px 10px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
-.panel h2{margin:0 0 6px;font-size:17px}
+.panel{margin:10px 10px 0;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 2px 0 var(--line)}
+.panel h2{margin:0 0 6px;font-size:19px;font-weight:800;color:var(--accent)}
 .lead{margin:0 0 6px;font-size:13px;line-height:1.6;color:var(--muted)}
 .lead b{color:var(--ink)}
 .opt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:12px}
 .ol{font-size:12px;color:var(--muted);min-width:76px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:var(--panel);border-radius:10px;min-height:38px;padding:0 12px;font-size:14px;color:var(--ink)}
+.chip{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;min-height:38px;padding:0 12px;font-size:14px;color:var(--ink)}
 .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .chip input{width:64px;border:0;background:transparent;font:inherit;font-weight:700;color:inherit;text-align:center;padding:0;margin-left:4px}
 .stepper{display:inline-flex;align-items:center;gap:8px}
@@ -112,8 +126,18 @@ body[data-mode="hb"] [data-pane="hb"],body[data-mode="clock"] [data-pane="clock"
   gap:2px;background:var(--line);padding:2px;border-radius:8px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 @supports (height:100dvh){.cgrid{--gs:max(240px,min(calc(100vw - 24px),calc(100dvh - 380px),620px))}}
 .cgrid i{font-style:normal;background:var(--panel);border-radius:2px;display:flex;align-items:center;justify-content:center;position:relative;
-  font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:calc(var(--gs) / var(--n) * .44);color:#fff;line-height:1;overflow:hidden}
+  font-family:"Fredoka",sans-serif;font-weight:600;font-size:calc(var(--gs) / var(--n) * .44);color:#fff;line-height:1;overflow:hidden}
 .cgrid i.f{background:var(--fill)}
+.cgrid.kj i{color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Sans",sans-serif;font-weight:500;font-size:calc(var(--gs) / var(--n) * .64)}
+.cgrid.kj i.f{background:var(--panel)}
+.cgrid.kj i.mk{background:color-mix(in srgb,var(--g1) 22%,var(--panel))}
+.cgrid.kj i.mk::after{display:none}
+.cgrid.kj.rev i.t{color:#fff}
+.cgrid i em{position:absolute;left:2px;top:1px;font-style:normal;font-family:"Fredoka",sans-serif;font-size:.36em;line-height:1;opacity:.95}
+.kchip small{opacity:.5;margin:0 2px}
+.kin{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.kin input{width:52px;height:44px;border:1.5px solid var(--line);background:var(--soft);border-radius:12px;text-align:center;font-size:24px;color:var(--ink);padding:0}
+.kc{font-size:1.5em;font-weight:500;color:var(--accent);margin:0 2px}
 .cgrid i.mk::after{content:"";width:36%;height:36%;border-radius:50%;background:var(--g1)}
 .cgrid i.f.mk::after{background:#fff}
 .cgrid.rev i.dim{opacity:.28}
@@ -123,15 +147,15 @@ body[data-mode="hb"] [data-pane="hb"],body[data-mode="clock"] [data-pane="clock"
 
 /* キーパッド・下のバー */
 .dock{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:8px 8px calc(12px + env(safe-area-inset-bottom));z-index:20;pointer-events:none}
-.dockbar{display:flex;flex-direction:column;align-items:stretch;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 2px 10px rgba(10,30,18,.14);pointer-events:auto;width:auto;max-width:520px}
+.dockbar{display:flex;flex-direction:column;align-items:stretch;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px;box-shadow:0 2px 10px rgba(10,30,18,.14);pointer-events:auto;width:auto;max-width:520px}
 .dockbar.wide{width:100%}
 .dockbar .row2{display:flex;gap:6px}
 .dockbar .row2 .btn{flex:1;min-height:50px;font-size:16px}
 .kp{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,1.4fr);gap:5px}
-.key{border:1px solid var(--line);background:var(--bg);border-radius:10px;min-height:48px;font-size:24px;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
+.key{border:1px solid var(--line);background:var(--soft);border-radius:12px;box-shadow:0 3px 0 var(--line);min-height:48px;font-size:24px;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
 .key:active:not(:disabled){background:var(--soft);transform:translateY(1px)}
 .key:disabled{opacity:.3}
-.key.ok{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:15px;font-weight:700;font-family:inherit}
+.key.ok{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:15px;font-weight:800;font-family:inherit;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 65%,#000)}
 .key .ic{width:24px;height:24px}
 .ansrow{display:flex;align-items:center;gap:10px;padding:0 6px}
 .ansrow .lbl{font-size:13px;color:var(--muted)}
@@ -184,8 +208,13 @@ body[data-mode="hb"] [data-pane="hb"],body[data-mode="clock"] [data-pane="clock"
 .hrow .n{color:var(--muted);font-size:12px;width:22px}
 .hrow .g{font-size:24px;letter-spacing:4px;min-width:72px}
 .hrow .r{margin-left:auto;font-weight:700}
-.hrow .r .h{color:var(--g0)}
-.hrow .r .b{color:var(--g1)}
+.sb{display:inline-flex;align-items:center;gap:3px}
+.sb em{font-style:normal;font-weight:800;font-size:12px;width:18px;height:18px;border-radius:5px;color:#fff;display:inline-flex;align-items:center;justify-content:center;margin:0 2px 0 6px}
+.sb em.s{background:var(--S)} .sb em.b{background:var(--B)}
+.sb i{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);display:inline-block}
+.sb i.s{background:var(--S);border-color:var(--S)} .sb i.b{background:var(--B);border-color:var(--B)}
+.legend{margin:8px 10px 0;font-size:12px;line-height:1.7;color:var(--muted)}
+.legend b{font-weight:800} .legend .h{color:var(--S)} .legend .b{color:var(--B)}
 .hrow.last{background:var(--soft);border-radius:8px;padding-left:4px}
 .memo{margin:8px 10px 0}
 .memo h4{margin:0 0 4px;font-size:12px;color:var(--muted);font-weight:500}
@@ -194,7 +223,7 @@ body[data-mode="hb"] [data-pane="hb"],body[data-mode="clock"] [data-pane="clock"
 .memo button.x{color:var(--muted);text-decoration:line-through;background:var(--soft)}
 .memo button.o{border-color:var(--g1);box-shadow:inset 0 0 0 2px var(--g1)}
 .hbres{font-size:26px;font-weight:700;text-align:center;min-height:36px;margin-top:6px}
-.hbres .h{color:var(--g0)} .hbres .b{color:var(--g1)}
+.hbres .h{color:var(--S)} .hbres .b{color:var(--B)}
 .secrets{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
 .secrets span{border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;background:var(--bg)}
 .secrets b{font-size:22px;margin-left:6px;letter-spacing:2px}
@@ -282,6 +311,12 @@ body[data-mode="hb"] [data-pane="hb"],body[data-mode="clock"] [data-pane="clock"
         <div class="opt"><span class="ol" data-i="optSize"></span>
           <div class="stepper"><button class="btn icon" id="cntMinus" aria-label="-">−</button><b class="num" id="cntN"></b><button class="btn icon" id="cntPlus" aria-label="+">＋</button></div></div>
         <div class="opt"><span class="ol"></span><div class="chips" id="cntSizes"></div></div>
+        <div class="opt"><span class="ol" data-i="optStyle"></span><div class="chips" id="cntStyle">
+          <button class="chip" data-val="color" data-i="stColor"></button><button class="chip" data-val="kanji" data-i="stKanji"></button></div></div>
+        <div id="cntKanjiBox" hidden>
+          <div class="opt"><span class="ol" data-i="optKanji"></span><div class="chips" id="cntKPre"></div></div>
+          <div class="opt"><span class="ol"></span><label class="kin"><span data-i="kCount"></span><input id="cntKA" autocomplete="off"></label><label class="kin"><span data-i="kOther"></span><input id="cntKB" autocomplete="off"></label></div>
+        </div>
         <div class="opt"><span class="ol" data-i="optLayout"></span><div class="chips" id="cntLayout">
           <button class="chip" data-val="order" data-i="lyOrder"></button><button class="chip" data-val="random" data-i="lyRandom"></button><button class="chip" data-val="mix" data-i="lyMix"></button></div></div>
         <div class="opt"><span class="ol" data-i="optTarget"></span><div class="chips" id="cntTarget">
@@ -431,7 +466,7 @@ body[data-mode="hb"] [data-pane="hb"],body[data-mode="clock"] [data-pane="clock"
 
 <script>
 /* ===== 設定 ===== */
-const APP_VER="2026.10.29-1";
+const APP_VER="2026.10.29-2";
 const SUPPORT_URL="https://ofuse.me/45tools";
 
 /* ===== アイコン ===== */
@@ -488,9 +523,9 @@ const I18N={
   start:"スタート",answer:"答える",confirm:"確定",next:"次へ",seeResult:"結果を見る",retry:"もう一度",close:"とじる",
   yourAns:"答え",score:"スコア",accuracy:"正答率",avgTime:"平均時間",sec:"秒",correct:"正解",best:"ベスト",bestOf:"ベスト（{k}）",newBest:"ベスト更新！",recTitle:"記録",nq:"{n}問",optQ:"問題数",q10:"10問",q20:"20問",
   sound:"効果音",tts:"国名を英語で読み上げ",on:"ON",off:"OFF",resetRec:"記録をリセット",resetAsk:"すべてのゲームの記録を消しますか？",resetDone:"記録を消しました",langLbl:"言語",helpLong:"使い方・このアプリについて",support:"このアプリを応援する",howTitle:"使い方",
-  how:"<b>マス数え</b>：塗られた（または塗られていない）マスの数を答えます。時間制限はありません。答えたあとに「見直す」かどうかを選べて、見直したときとそうでないときの正答率を比べられます。マスをタップすると印をつけられます。<br><b>たし算</b>：表示された数にいくつ足すと目標の数になるかを答えます。<br><b>瞬間記憶</b>：一瞬だけ光った場所をおぼえてタップします。国旗ボーナスでは、国の名前を英語で読み上げます。<br><b>数当て</b>：1台のスマホを順番に回して遊ぶヒット＆ブロー。ひとりでも遊べます。<br><b>時計</b>：時計の読み方・針の合わせ方・何分後の練習です。<br><br>記録はこの端末の中だけに保存されます。国旗画像：flag-icons（MIT License）。",
+  how:"<b>マス数え</b>：塗られた（または塗られていない）マスの数を答えます。「文字」にすると、「毛」の中に混ざった「手」のように、似た字の数を数えます。時間制限はありません。答えたあとに「見直す」かどうかを選べて、見直したときとそうでないときの正答率を比べられます。マスをタップすると印をつけられます。<br><b>たし算</b>：表示された数にいくつ足すと目標の数になるかを答えます。<br><b>瞬間記憶</b>：一瞬だけ光った場所をおぼえてタップします。国旗ボーナスでは、国の名前を英語で読み上げます。<br><b>数当て</b>：1台のスマホを順番に回して遊ぶ数当て。ストライク（数字も位置も同じ）とボール（数字だけ同じ）をヒントに当てます。ひとりでも遊べます。<br><b>時計</b>：時計の読み方・針の合わせ方・何分後の練習です。<br><br>記録はこの端末の中だけに保存されます。国旗画像：flag-icons（MIT License）。",
   cntTitle:"マスを数えよう",cntLead:"正確に数える力と、<b>見直す習慣</b>をきたえます。時間制限はありません。",optSize:"マスの数",optLayout:"塗り方",lyOrder:"順番に",lyRandom:"ランダム",lyMix:"まぜる",
-  optTarget:"数えるもの",tgFill:"塗られたマス",tgEmpty:"塗られていないマス",tgMix:"まぜる",optMark:"マスをタップして印をつける",
+  optStyle:"マスの中身",stColor:"色",stKanji:"文字",optKanji:"文字の組",kCount:"数える字",kOther:"まぎらわしい字",qChar:"{c} はいくつ？",kSame:"2つの字はちがう字にしてください",optTarget:"数えるもの",tgFill:"塗られたマス",tgEmpty:"塗られていないマス",tgMix:"まぜる",optMark:"マスをタップして印をつける",
   qFill:"<b>塗られたマス</b> {sw} はいくつ？",qEmpty:"<b>塗られていないマス</b> {sw} はいくつ？",
   reviewing:"見直し中",askReview:"答えは <b class=\"num\" style=\"font-size:22px\">{n}</b>。見直しますか？",doReview:"見直す",submitNow:"このまま答える",reviewHint:"見直し中：印をつけながら、もう一度数えてみよう",
   judgeOk:"正解！ {n}",judgeNg:"正解は {n}（あなたの答え {a}）",fixed:"見直しで直せた！",groupHint:"10個ずつ色を変えて番号をふっています",
@@ -500,10 +535,10 @@ const I18N={
   flTitle:"光った場所をおぼえよう",flLead:"一瞬だけ光るマスの場所をおぼえて、タップします。<b>見る→おぼえる→思い出す</b>で脳を活性化。",optStartG:"はじめのマス",optSpeed:"光る時間",spSlow:"ゆっくり",spNormal:"ふつう",spFast:"はやい",
   optFlags:"国旗",flagsOn:"表示する",flagsOff:"表示しない",level:"Lv",flReady:"じゅんび…",flLook:"おぼえて！",flTap:"光った場所をタップ（あと {n}）",flClear:"クリア！",flPerfect:"パーフェクト！ +{n}",
   flBonusQ:"ボーナス：この国旗はどこにあった？",flBonusOk:"正解！ +{n}",flBonusNg:"ざんねん、ここでした",nextLv:"次のレベルへ",gameOver:"ゲームオーバー",reachLv:"到達レベル",bestLv:"最高レベル",
-  hbTitle:"数当て（ヒット＆ブロー）",hbRule:"相手が決めた数字を当てるゲーム。<b>ヒット</b>＝数字も位置も同じ、<b>ブロー</b>＝数字は合っているが位置がちがう。同じ数字は2回使えません。",
+  hbTitle:"数当て（ストライク＆ボール）",hbRule:"相手が決めた数字を当てるゲーム。<b>ストライク（S）</b>＝数字も位置も同じ、<b>ボール（B）</b>＝数字は合っているが位置がちがう。同じ数字は2回使えません。",hbLegend:"<b class=\"h\">S＝ストライク</b>：数字も位置も同じ　<b class=\"b\">B＝ボール</b>：数字は合っているが位置がちがう",
   optPlayers:"人数",p1:"ひとり",optDigits:"けた数",digitsN:"{n}けた",playerN:"プレイヤー{n}",namesLbl:"名前",hbPass:"{name} さんの番",hbPassSub:"ほかの人に見えないようにして、秘密の数字を決めてね",ready:"準備OK",
   hbSetTitle:"{name} さんの秘密の数字",show:"表示",hide:"かくす",decide:"決定",hbAllSet:"全員の数字が決まりました！",hbStartFrom:"{name} さんから当てていこう",begin:"はじめる",
-  hbVs:"{a} → {b} の数字を当てる",hbVsSolo:"アプリが決めた数字を当てよう",hbHB:"<span class=\"h\">{h} ヒット</span>　<span class=\"b\">{b} ブロー</span>",memo:"メモ（タップで ✕ → ○ → なし）",
+  hbVs:"{a} → {b} の数字を当てる",hbVsSolo:"アプリが決めた数字を当てよう",hbHB:"<span class=\"h\">{h} ストライク</span>　<span class=\"b\">{b} ボール</span>",memo:"メモ（タップで ✕ → ○ → なし）",
   hbNext:"{name} さんへ渡す",hbWin:"{name} さんの勝ち！",hbWinSub:"{n}回目で当てました",hbSolo:"{n}回で正解！",secrets:"みんなの数字",hbBest:"ひとりの最少回数",hbHist:"これまでの答え",tries:"回",hbTurn:"{name} さんの番です",hbGuessNo:"この答えはもう使いました",
   clTitle:"時計を読もう",clLead:"時刻を読む・針を合わせる・何分後を考える練習です。",optKind:"問題の種類",kRead:"読む",kSet:"合わせる",kAfter:"何分後",kMix:"まぜる",optLevel:"むずかしさ",
   lvHour:"ちょうど",lvHalf:"30分",lvFive:"5分",lvOne:"1分",clReadQ:"この時計は何時何分？",clSetQ:"<b>{t}</b> に針を合わせよう",clSetHint:"長い針・短い針をドラッグして動かせます",clAfterQ:"この時刻の <b>{d}</b> は？",
@@ -512,9 +547,9 @@ const I18N={
   start:"Start",answer:"Answer",confirm:"Submit",next:"Next",seeResult:"See results",retry:"Play again",close:"Close",
   yourAns:"Answer",score:"Score",accuracy:"Accuracy",avgTime:"Avg. time",sec:"s",correct:"Correct",best:"Best",bestOf:"Best ({k})",newBest:"New best!",recTitle:"Records",nq:"{n} q",optQ:"Questions",q10:"10 q",q20:"20 q",
   sound:"Sound effects",tts:"Read country names aloud",on:"ON",off:"OFF",resetRec:"Reset records",resetAsk:"Delete records for all games?",resetDone:"Records deleted",langLbl:"Language",helpLong:"How to use / About",support:"Support this app",howTitle:"How to use",
-  how:"<b>Count</b>: Count the filled (or empty) squares. There's no time limit. After answering you can choose to check again, and compare your accuracy with and without checking. Tap squares to mark them.<br><b>Add</b>: How much do you add to the number shown to reach the goal?<br><b>Flash</b>: Remember where the squares lit up for a moment, then tap them. The flag bonus reads country names aloud in English.<br><b>Guess</b>: Hit &amp; Blow, passing one phone around. You can also play alone.<br><b>Clock</b>: Practice reading clocks, setting the hands and working out the time later.<br><br>Records stay on this device only. Flag images: flag-icons (MIT License).",
+  how:"<b>Count</b>: Count the filled (or empty) squares. There's no time limit. After answering you can choose to check again, and compare your accuracy with and without checking. Tap squares to mark them.<br><b>Add</b>: How much do you add to the number shown to reach the goal?<br><b>Flash</b>: Remember where the squares lit up for a moment, then tap them. The flag bonus reads country names aloud in English.<br><b>Guess</b>: Strikes &amp; Balls, passing one phone around. You can also play alone.<br><b>Clock</b>: Practice reading clocks, setting the hands and working out the time later.<br><br>Records stay on this device only. Flag images: flag-icons (MIT License).",
   cntTitle:"Count the squares",cntLead:"Builds accurate counting and the <b>habit of checking your work</b>. No time limit.",optSize:"Grid size",optLayout:"Pattern",lyOrder:"In order",lyRandom:"Random",lyMix:"Mixed",
-  optTarget:"Count",tgFill:"Filled",tgEmpty:"Empty",tgMix:"Mixed",optMark:"Tap squares to mark them",
+  optStyle:"Squares show",stColor:"Colors",stKanji:"Characters",optKanji:"Character pair",kCount:"Count",kOther:"Look-alike",qChar:"How many {c}?",kSame:"Choose two different characters",optTarget:"Count",tgFill:"Filled",tgEmpty:"Empty",tgMix:"Mixed",optMark:"Tap squares to mark them",
   qFill:"How many <b>filled</b> {sw} squares?",qEmpty:"How many <b>empty</b> {sw} squares?",
   reviewing:"Checking",askReview:"Your answer is <b class=\"num\" style=\"font-size:22px\">{n}</b>. Check again?",doReview:"Check again",submitNow:"Submit as is",reviewHint:"Checking: count once more, marking as you go",
   judgeOk:"Correct! {n}",judgeNg:"The answer is {n} (you said {a})",fixed:"Fixed by checking!",groupHint:"Numbered in groups of 10 with alternating colors",
@@ -524,10 +559,10 @@ const I18N={
   flTitle:"Remember where it lit up",flLead:"Squares light up for an instant. Remember where, then tap them. <b>See → remember → recall</b> to wake up your brain.",optStartG:"Starting grid",optSpeed:"Flash time",spSlow:"Slow",spNormal:"Normal",spFast:"Fast",
   optFlags:"Flags",flagsOn:"Show",flagsOff:"Hide",level:"Lv",flReady:"Get ready…",flLook:"Remember!",flTap:"Tap where it lit up ({n} left)",flClear:"Clear!",flPerfect:"Perfect! +{n}",
   flBonusQ:"Bonus: where was this flag?",flBonusOk:"Correct! +{n}",flBonusNg:"Not quite — it was here",nextLv:"Next level",gameOver:"Game over",reachLv:"Level reached",bestLv:"Top level",
-  hbTitle:"Number guess (Hit & Blow)",hbRule:"Guess the secret number. <b>Hit</b> = right digit in the right place. <b>Blow</b> = right digit in the wrong place. Each digit can be used only once.",
+  hbTitle:"Number guess (Strikes & Balls)",hbRule:"Guess the secret number. <b>Strike (S)</b> = right digit in the right place. <b>Ball (B)</b> = right digit in the wrong place. Each digit can be used only once.",hbLegend:"<b class=\"h\">S = Strike</b>: right digit, right place　<b class=\"b\">B = Ball</b>: right digit, wrong place",
   optPlayers:"Players",p1:"Solo",optDigits:"Digits",digitsN:"{n} digits",playerN:"Player {n}",namesLbl:"Names",hbPass:"{name}'s turn",hbPassSub:"Don't let anyone else see — choose your secret number",ready:"Ready",
   hbSetTitle:"{name}'s secret number",show:"Show",hide:"Hide",decide:"Set",hbAllSet:"Everyone has chosen a number!",hbStartFrom:"{name} goes first",begin:"Begin",
-  hbVs:"{a} → guess {b}'s number",hbVsSolo:"Guess the app's secret number",hbHB:"<span class=\"h\">{h} Hit</span>　<span class=\"b\">{b} Blow</span>",memo:"Memo (tap: ✕ → ○ → none)",
+  hbVs:"{a} → guess {b}'s number",hbVsSolo:"Guess the app's secret number",hbHB:"<span class=\"h\">{h} Strike</span>　<span class=\"b\">{b} Ball</span>",memo:"Memo (tap: ✕ → ○ → none)",
   hbNext:"Pass to {name}",hbWin:"{name} wins!",hbWinSub:"Solved on try {n}",hbSolo:"Solved in {n} tries!",secrets:"Secret numbers",hbBest:"Fewest tries (solo)",hbHist:"Guesses",tries:" tries",hbTurn:"{name}'s turn",hbGuessNo:"You already tried that",
   clTitle:"Read the clock",clLead:"Practice reading the time, setting the hands, and working out the time later.",optKind:"Type",kRead:"Read",kSet:"Set",kAfter:"Later",kMix:"Mixed",optLevel:"Level",
   lvHour:"On the hour",lvHalf:"30 min",lvFive:"5 min",lvOne:"1 min",clReadQ:"What time is it?",clSetQ:"Set the clock to <b>{t}</b>",clSetHint:"Drag the long and short hands",clAfterQ:"What time is it <b>{d}</b>?",
@@ -536,9 +571,9 @@ const I18N={
   start:"開始",answer:"作答",confirm:"確定",next:"下一題",seeResult:"看結果",retry:"再玩一次",close:"關閉",
   yourAns:"答案",score:"分數",accuracy:"正確率",avgTime:"平均時間",sec:"秒",correct:"答對",best:"最佳",bestOf:"最佳（{k}）",newBest:"刷新紀錄！",recTitle:"紀錄",nq:"{n}題",optQ:"題數",q10:"10題",q20:"20題",
   sound:"音效",tts:"用英語朗讀國名",on:"開",off:"關",resetRec:"清除紀錄",resetAsk:"要刪除所有遊戲的紀錄嗎？",resetDone:"已刪除紀錄",langLbl:"語言",helpLong:"使用方法・關於本程式",support:"支持這個程式",howTitle:"使用方法",
-  how:"<b>數格子</b>：回答塗色（或沒塗色）的格子數量。沒有時間限制。作答後可以選擇是否「檢查」，並比較有檢查和沒檢查時的正確率。點格子可以做記號。<br><b>加法</b>：顯示的數字再加多少會變成目標數字？<br><b>瞬間記憶</b>：記住一瞬間發光的位置並點選。國旗加分題會用英語朗讀國名。<br><b>猜數字</b>：一支手機輪流傳著玩的 Hit &amp; Blow，也可以一個人玩。<br><b>時鐘</b>：練習看時鐘、調指針、算幾分鐘後的時間。<br><br>紀錄只保存在這台裝置中。國旗圖片：flag-icons（MIT License）。",
+  how:"<b>數格子</b>：回答塗色（或沒塗色）的格子數量。沒有時間限制。作答後可以選擇是否「檢查」，並比較有檢查和沒檢查時的正確率。點格子可以做記號。<br><b>加法</b>：顯示的數字再加多少會變成目標數字？<br><b>瞬間記憶</b>：記住一瞬間發光的位置並點選。國旗加分題會用英語朗讀國名。<br><b>猜數字</b>：一支手機輪流傳著玩的猜數字（好球＆壞球），也可以一個人玩。<br><b>時鐘</b>：練習看時鐘、調指針、算幾分鐘後的時間。<br><br>紀錄只保存在這台裝置中。國旗圖片：flag-icons（MIT License）。",
   cntTitle:"數數看有幾格",cntLead:"鍛鍊正確數數的能力和<b>檢查的習慣</b>。沒有時間限制。",optSize:"格子數",optLayout:"塗法",lyOrder:"依序",lyRandom:"隨機",lyMix:"混合",
-  optTarget:"要數的",tgFill:"塗色的格子",tgEmpty:"沒塗色的格子",tgMix:"混合",optMark:"點格子做記號",
+  optStyle:"格子內容",stColor:"顏色",stKanji:"文字",optKanji:"文字組合",kCount:"要數的字",kOther:"相似的字",qChar:"{c} 有幾個？",kSame:"請選兩個不同的字",optTarget:"要數的",tgFill:"塗色的格子",tgEmpty:"沒塗色的格子",tgMix:"混合",optMark:"點格子做記號",
   qFill:"<b>塗色的格子</b> {sw} 有幾格？",qEmpty:"<b>沒塗色的格子</b> {sw} 有幾格？",
   reviewing:"檢查中",askReview:"你的答案是 <b class=\"num\" style=\"font-size:22px\">{n}</b>。要再檢查嗎？",doReview:"檢查",submitNow:"直接作答",reviewHint:"檢查中：一邊做記號，一邊再數一次",
   judgeOk:"答對了！ {n}",judgeNg:"正確答案是 {n}（你的答案 {a}）",fixed:"檢查後改對了！",groupHint:"每10個換一種顏色並標上編號",
@@ -548,10 +583,10 @@ const I18N={
   flTitle:"記住發光的位置",flLead:"記住一瞬間發光的格子位置，然後點選。<b>看→記→想起來</b>，活化大腦。",optStartG:"開始的格子",optSpeed:"發光時間",spSlow:"慢",spNormal:"普通",spFast:"快",
   optFlags:"國旗",flagsOn:"顯示",flagsOff:"不顯示",level:"Lv",flReady:"準備…",flLook:"記住！",flTap:"點選發光的位置（還有 {n} 個）",flClear:"過關！",flPerfect:"完美！ +{n}",
   flBonusQ:"加分題：這面國旗在哪裡？",flBonusOk:"答對了！ +{n}",flBonusNg:"可惜，在這裡",nextLv:"下一關",gameOver:"遊戲結束",reachLv:"到達等級",bestLv:"最高等級",
-  hbTitle:"猜數字（Hit & Blow）",hbRule:"猜出對方決定的數字。<b>Hit</b>＝數字和位置都對，<b>Blow</b>＝數字對但位置不對。同一個數字不能用兩次。",
+  hbTitle:"猜數字（好球＆壞球）",hbRule:"猜出對方決定的數字。<b>好球（S）</b>＝數字和位置都對，<b>壞球（B）</b>＝數字對但位置不對。同一個數字不能用兩次。",hbLegend:"<b class=\"h\">S＝好球</b>：數字和位置都對　<b class=\"b\">B＝壞球</b>：數字對但位置不對",
   optPlayers:"人數",p1:"一個人",optDigits:"位數",digitsN:"{n}位數",playerN:"玩家{n}",namesLbl:"名字",hbPass:"輪到 {name}",hbPassSub:"不要讓別人看到，決定你的秘密數字",ready:"準備好了",
   hbSetTitle:"{name} 的秘密數字",show:"顯示",hide:"隱藏",decide:"決定",hbAllSet:"大家的數字都決定好了！",hbStartFrom:"從 {name} 開始猜",begin:"開始",
-  hbVs:"{a} → 猜 {b} 的數字",hbVsSolo:"猜猜程式決定的數字",hbHB:"<span class=\"h\">{h} Hit</span>　<span class=\"b\">{b} Blow</span>",memo:"筆記（點選：✕ → ○ → 無）",
+  hbVs:"{a} → 猜 {b} 的數字",hbVsSolo:"猜猜程式決定的數字",hbHB:"<span class=\"h\">{h} 好球</span>　<span class=\"b\">{b} 壞球</span>",memo:"筆記（點選：✕ → ○ → 無）",
   hbNext:"交給 {name}",hbWin:"{name} 贏了！",hbWinSub:"第{n}次猜中",hbSolo:"{n}次猜中！",secrets:"大家的數字",hbBest:"一個人的最少次數",hbHist:"猜過的數字",tries:"次",hbTurn:"輪到 {name}",hbGuessNo:"這個數字已經猜過了",
   clTitle:"學看時鐘",clLead:"練習看時間、調指針、算幾分鐘後的時間。",optKind:"題型",kRead:"看時間",kSet:"調指針",kAfter:"幾分後",kMix:"混合",optLevel:"難度",
   lvHour:"整點",lvHalf:"30分",lvFive:"5分",lvOne:"1分",clReadQ:"這個時鐘是幾點幾分？",clSetQ:"把指針調到 <b>{t}</b>",clSetHint:"可以拖動長針和短針",clAfterQ:"這個時間的 <b>{d}</b> 是？",
@@ -560,9 +595,9 @@ const I18N={
   start:"开始",answer:"作答",confirm:"确定",next:"下一题",seeResult:"看结果",retry:"再玩一次",close:"关闭",
   yourAns:"答案",score:"分数",accuracy:"正确率",avgTime:"平均时间",sec:"秒",correct:"答对",best:"最佳",bestOf:"最佳（{k}）",newBest:"刷新纪录！",recTitle:"纪录",nq:"{n}题",optQ:"题数",q10:"10题",q20:"20题",
   sound:"音效",tts:"用英语朗读国名",on:"开",off:"关",resetRec:"清除纪录",resetAsk:"要删除所有游戏的纪录吗？",resetDone:"已删除纪录",langLbl:"语言",helpLong:"使用方法・关于本程序",support:"支持这个程序",howTitle:"使用方法",
-  how:"<b>数格子</b>：回答涂色（或没涂色）的格子数量。没有时间限制。作答后可以选择是否「检查」，并比较有检查和没检查时的正确率。点格子可以做记号。<br><b>加法</b>：显示的数字再加多少会变成目标数字？<br><b>瞬间记忆</b>：记住一瞬间发光的位置并点击。国旗加分题会用英语朗读国名。<br><b>猜数字</b>：一支手机轮流传着玩的 Hit &amp; Blow，也可以一个人玩。<br><b>时钟</b>：练习看时钟、调指针、算几分钟后的时间。<br><br>纪录只保存在这台设备中。国旗图片：flag-icons（MIT License）。",
+  how:"<b>数格子</b>：回答涂色（或没涂色）的格子数量。没有时间限制。作答后可以选择是否「检查」，并比较有检查和没检查时的正确率。点格子可以做记号。<br><b>加法</b>：显示的数字再加多少会变成目标数字？<br><b>瞬间记忆</b>：记住一瞬间发光的位置并点击。国旗加分题会用英语朗读国名。<br><b>猜数字</b>：一支手机轮流传着玩的猜数字（好球＆坏球），也可以一个人玩。<br><b>时钟</b>：练习看时钟、调指针、算几分钟后的时间。<br><br>纪录只保存在这台设备中。国旗图片：flag-icons（MIT License）。",
   cntTitle:"数数看有几格",cntLead:"锻炼正确数数的能力和<b>检查的习惯</b>。没有时间限制。",optSize:"格子数",optLayout:"涂法",lyOrder:"依序",lyRandom:"随机",lyMix:"混合",
-  optTarget:"要数的",tgFill:"涂色的格子",tgEmpty:"没涂色的格子",tgMix:"混合",optMark:"点格子做记号",
+  optStyle:"格子内容",stColor:"颜色",stKanji:"文本",optKanji:"文本组合",kCount:"要数的字",kOther:"相似的字",qChar:"{c} 有几个？",kSame:"请选两个不同的字",optTarget:"要数的",tgFill:"涂色的格子",tgEmpty:"没涂色的格子",tgMix:"混合",optMark:"点格子做记号",
   qFill:"<b>涂色的格子</b> {sw} 有几格？",qEmpty:"<b>没涂色的格子</b> {sw} 有几格？",
   reviewing:"检查中",askReview:"你的答案是 <b class=\"num\" style=\"font-size:22px\">{n}</b>。要再检查吗？",doReview:"检查",submitNow:"直接作答",reviewHint:"检查中：一边做记号，一边再数一次",
   judgeOk:"答对了！ {n}",judgeNg:"正确答案是 {n}（你的答案 {a}）",fixed:"检查后改对了！",groupHint:"每10个换一种颜色并标上编号",
@@ -572,10 +607,10 @@ const I18N={
   flTitle:"记住发光的位置",flLead:"记住一瞬间发光的格子位置，然后点击。<b>看→记→想起来</b>，活化大脑。",optStartG:"开始的格子",optSpeed:"发光时间",spSlow:"慢",spNormal:"普通",spFast:"快",
   optFlags:"国旗",flagsOn:"显示",flagsOff:"不显示",level:"Lv",flReady:"准备…",flLook:"记住！",flTap:"点击发光的位置（还有 {n} 个）",flClear:"过关！",flPerfect:"完美！ +{n}",
   flBonusQ:"加分题：这面国旗在哪里？",flBonusOk:"答对了！ +{n}",flBonusNg:"可惜，在这里",nextLv:"下一关",gameOver:"游戏结束",reachLv:"到达等级",bestLv:"最高等级",
-  hbTitle:"猜数字（Hit & Blow）",hbRule:"猜出对方决定的数字。<b>Hit</b>＝数字和位置都对，<b>Blow</b>＝数字对但位置不对。同一个数字不能用两次。",
+  hbTitle:"猜数字（好球＆坏球）",hbRule:"猜出对方决定的数字。<b>好球（S）</b>＝数字和位置都对，<b>坏球（B）</b>＝数字对但位置不对。同一个数字不能用两次。",hbLegend:"<b class=\"h\">S＝好球</b>：数字和位置都对　<b class=\"b\">B＝坏球</b>：数字对但位置不对",
   optPlayers:"人数",p1:"一个人",optDigits:"位数",digitsN:"{n}位数",playerN:"玩家{n}",namesLbl:"名字",hbPass:"轮到 {name}",hbPassSub:"不要让别人看到，决定你的秘密数字",ready:"准备好了",
   hbSetTitle:"{name} 的秘密数字",show:"显示",hide:"隐藏",decide:"决定",hbAllSet:"大家的数字都决定好了！",hbStartFrom:"从 {name} 开始猜",begin:"开始",
-  hbVs:"{a} → 猜 {b} 的数字",hbVsSolo:"猜猜程序决定的数字",hbHB:"<span class=\"h\">{h} Hit</span>　<span class=\"b\">{b} Blow</span>",memo:"笔记（点击：✕ → ○ → 无）",
+  hbVs:"{a} → 猜 {b} 的数字",hbVsSolo:"猜猜程序决定的数字",hbHB:"<span class=\"h\">{h} 好球</span>　<span class=\"b\">{b} 坏球</span>",memo:"笔记（点击：✕ → ○ → 无）",
   hbNext:"交给 {name}",hbWin:"{name} 赢了！",hbWinSub:"第{n}次猜中",hbSolo:"{n}次猜中！",secrets:"大家的数字",hbBest:"一个人的最少次数",hbHist:"猜过的数字",tries:"次",hbTurn:"轮到 {name}",hbGuessNo:"这个数字已经猜过了",
   clTitle:"学看时钟",clLead:"练习看时间、调指针、算几分钟后的时间。",optKind:"题型",kRead:"看时间",kSet:"调指针",kAfter:"几分后",kMix:"混合",optLevel:"难度",
   lvHour:"整点",lvHalf:"30分",lvFive:"5分",lvOne:"1分",clReadQ:"这个时钟是几点几分？",clSetQ:"把指针调到 <b>{t}</b>",clSetHint:"可以拖动长针和短针",clAfterQ:"这个时间的 <b>{d}</b> 是？",
@@ -650,13 +685,18 @@ $("#resClose").onclick=()=>{ hideResult(); resClose&&resClose(); };
    マス数え
    ========================================================= */
 const CNT={
-  s:Object.assign({n:10,layout:"order",target:"fill",q:10,mark:true},store.get("b_cnt",{})),
+  s:Object.assign({n:10,layout:"order",target:"fill",q:10,mark:true,style:"color",kA:"手",kB:"毛"},store.get("b_cnt",{})),
   st:null,q:null,timer:0,rf:[],
   save(){ store.set("b_cnt",this.s); },
   init(){
     this.pane=$('[data-pane="count"]');
     $("#cntSizes").innerHTML=[5,6,8,10,12,15].map(n=>`<button class="chip num" data-val="${n}">${n}×${n}</button>`).join("");
     this.rf.push(chips($("#cntSizes"),()=>this.s.n,v=>{this.s.n=+v;this.save()},()=>this.refresh()));
+    $("#cntKPre").innerHTML=KPRE.map(p=>`<button class="chip kchip" data-val="${p}">${p[0]}<small>/</small>${p[1]}</button>`).join("");
+    this.rf.push(chips($("#cntStyle"),()=>this.s.style,v=>{this.s.style=v;this.save()},()=>this.refresh()));
+    this.rf.push(chips($("#cntKPre"),()=>this.s.kA+this.s.kB,v=>{const a=Array.from(v);this.s.kA=a[0];this.s.kB=a[1];this.save()},()=>this.refresh()));
+    const kin=(id,key)=>{ const el=$(id); el.addEventListener("change",()=>{ const c=Array.from(el.value.trim())[0]; if(c){ this.s[key]=c; this.save(); } this.refresh(); }); };
+    kin("#cntKA","kA"); kin("#cntKB","kB");
     this.rf.push(chips($("#cntLayout"),()=>this.s.layout,v=>{this.s.layout=v;this.save()}));
     this.rf.push(chips($("#cntTarget"),()=>this.s.target,v=>{this.s.target=v;this.save()}));
     this.rf.push(chips($("#cntQ"),()=>this.s.q,v=>{this.s.q=+v;this.save()}));
@@ -668,10 +708,15 @@ const CNT={
       if(q.marks.has(i)){ q.marks.delete(i); c.classList.remove("mk"); } else { q.marks.add(i); c.classList.add("mk"); } tone(760,.04,"triangle",.05); });
     this.refresh();
   },
+  bestKey(){ return this.s.n+(this.s.style==="kanji"?"k":""); },
+  sizeLbl(){ return `${this.s.n}×${this.s.n}`+(this.s.style==="kanji"?`・${this.s.kA}/${this.s.kB}`:""); },
   setN(n){ this.s.n=Math.max(3,Math.min(20,n)); this.save(); this.refresh(); },
   refresh(){
     this.rf.forEach(f=>f()); $("#cntN").textContent=`${this.s.n}×${this.s.n}`; $("#cntMark").checked=this.s.mark;
-    const best=store.get("b_cnt_best",{})[this.s.n]; $("#cntBestLbl").textContent=t("bestOf",{k:`${this.s.n}×${this.s.n}`}); $("#cntBest").textContent=best??"—";
+    const kj=this.s.style==="kanji"; $("#cntKanjiBox").hidden=!kj;
+    if(document.activeElement!==$("#cntKA")) $("#cntKA").value=this.s.kA; if(document.activeElement!==$("#cntKB")) $("#cntKB").value=this.s.kB;
+    const tb=$$("#cntTarget [data-val]"); if(kj){ tb[0].textContent=`「${this.s.kA}」`; tb[1].textContent=`「${this.s.kB}」`; } else { tb[0].innerHTML=t("tgFill"); tb[1].innerHTML=t("tgEmpty"); }
+    const best=store.get("b_cnt_best",{})[this.bestKey()]; $("#cntBestLbl").textContent=t("bestOf",{k:this.sizeLbl()}); $("#cntBest").textContent=best??"—";
     const S=store.get("b_cnt_stats",{rv:[0,0],dr:[0,0]}); $("#cntStats").innerHTML=cmpHTML(S.rv,S.dr);
     const n=$("#cntNote"); const m=cmpNote(S.rv,S.dr); n.textContent=m.text; n.classList.toggle("good",m.good);
   },
@@ -698,7 +743,7 @@ const CNT={
     else { if(q.input.length>=3) return; q.input=(q.input==="0"?"":q.input)+k; }
     sfx.tap(); this.playDock();
   },
-  start(){ this.st={i:0,res:[],score:0}; this.view("play"); this.next(); },
+  start(){ if(this.s.style==="kanji"&&this.s.kA===this.s.kB){ toast(t("kSame")); return; } this.st={i:0,res:[],score:0}; this.view("play"); this.next(); },
   next(){
     const n=this.s.n,T=n*n;
     const layout=this.s.layout==="mix"?(Math.random()<.5?"order":"random"):this.s.layout;
@@ -707,15 +752,15 @@ const CNT={
     const filled=new Array(T).fill(false);
     if(layout==="order"){ for(let i=0;i<k;i++) filled[i]=true; } else { shuffle([...Array(T).keys()]).slice(0,k).forEach(i=>filled[i]=true); }
     this.st.i++;
-    this.q={n,filled,target,ans:target==="fill"?k:T-k,input:"",firstAns:"",reviewed:false,phase:"answer",t0:now(),marks:new Set()};
+    const kj=this.s.style==="kanji"; this.q={n,filled,target,kj,A:this.s.kA,B:this.s.kB,ans:target==="fill"?k:T-k,input:"",firstAns:"",reviewed:false,phase:"answer",t0:now(),marks:new Set()};
     $("#cntProg").textContent=`${this.st.i} / ${this.s.q}`;
-    $("#cntPrompt").innerHTML=t(target==="fill"?"qFill":"qEmpty",{sw:`<span class="sw0 ${target==="fill"?"f":"e"}"></span>`});
+    $("#cntPrompt").innerHTML=kj?t("qChar",{c:`<b class="kc">${esc(target==="fill"?this.s.kA:this.s.kB)}</b>`}):t(target==="fill"?"qFill":"qEmpty",{sw:`<span class="sw0 ${target==="fill"?"f":"e"}"></span>`});
     this.grid(false); this.banner(); this.playDock();
     clearInterval(this.timer); const el=$("#cntTime"); this.timer=setInterval(()=>{ if(this.q&&this.q.phase!=="judged") el.textContent=fmtSec(now()-this.q.t0); },200); el.textContent=fmtSec(0);
   },
-  grid(reveal){ const q=this.q,g=$("#cntGrid"); g.style.setProperty("--n",q.n); let h="",j=0;
-    for(let i=0;i<q.n*q.n;i++){ const f=q.filled[i],isT=(q.target==="fill")===f; let cls=f?"f":"",inner="";
-      if(reveal){ if(isT){ cls+=` t g${Math.floor(j/10)%2}${j%10===9?" ten":""}`; inner=j+1; j++; } else cls+=" dim"; }
+  grid(reveal){ const q=this.q,g=$("#cntGrid"); g.style.setProperty("--n",q.n); g.classList.toggle("kj",!!q.kj); let h="",j=0;
+    for(let i=0;i<q.n*q.n;i++){ const f=q.filled[i],isT=(q.target==="fill")===f; let cls=f?"f":""; const ch=q.kj?esc(f?q.A:q.B):""; let inner=ch;
+      if(reveal){ if(isT){ cls+=` t g${Math.floor(j/10)%2}${j%10===9?" ten":""}`; inner=q.kj?`<em>${j+1}</em>${ch}`:j+1; j++; } else cls+=" dim"; }
       else if(q.marks.has(i)) cls+=" mk";
       h+=`<i class="${cls}" data-c="${i}">${inner}</i>`; }
     g.innerHTML=h; g.classList.toggle("rev",!!reveal); },
@@ -732,17 +777,18 @@ const CNT={
     const S=store.get("b_cnt_stats",{rv:[0,0],dr:[0,0]}); const key=q.reviewed?"rv":"dr"; S[key][0]++; if(q.ok) S[key][1]++; store.set("b_cnt_stats",S);
     q.ok?sfx.ok():sfx.ng(); this.grid(true); this.banner(); this.playDock(); },
   finish(){ const r=this.st.res,n=r.length,c=r.filter(x=>x.ok).length,avg=r.reduce((a,x)=>a+x.ms,0)/Math.max(1,n);
-    const bm=store.get("b_cnt_best",{}); const isBest=c>0&&this.st.score>(bm[this.s.n]||0); if(isBest){ bm[this.s.n]=this.st.score; store.set("b_cnt_best",bm); }
+    const bm=store.get("b_cnt_best",{}),bk=this.bestKey(); const isBest=c>0&&this.st.score>(bm[bk]||0); if(isBest){ bm[bk]=this.st.score; store.set("b_cnt_best",bm); }
     const rv=r.filter(x=>x.rv),dr=r.filter(x=>!x.rv); const S=store.get("b_cnt_stats",{rv:[0,0],dr:[0,0]});
     const fx=r.filter(x=>x.fixed).length; const note=cmpNote(S.rv,S.dr);
     const extra=`<div class="cmph">${esc(t("cmpThis"))}</div>${cmpHTML([rv.length,rv.filter(x=>x.ok).length],[dr.length,dr.filter(x=>x.ok).length])}`
       +(fx?`<p class="note good">${esc(t("fixed"))} ×${fx}</p>`:"")
       +`<div class="cmph">${esc(t("cmpAll"))}</div>${cmpHTML(S.rv,S.dr)}<p class="note${note.good?" good":""}">${esc(note.text)}</p>`;
     this.q=null; this.view("setup"); this.refresh();
-    showResult({title:`${t("tCount")} ${this.s.n}×${this.s.n}`,big:pct(c,n)+"%",bigLbl:t("accuracy"),isBest,
+    showResult({title:`${t("tCount")} ${this.sizeLbl()}`,big:pct(c,n)+"%",bigLbl:t("accuracy"),isBest,
       stats:[[t("correct"),`${c}/${n}`],[t("avgTime"),fmtSec(avg)],[t("score"),this.st.score]],extra,retry:()=>this.start()}); },
   quit(){ clearInterval(this.timer); this.q=null; this.view("setup"); this.refresh(); }
 };
+const KPRE=["手毛","末未","士土","入人","犬太","玉王","千干","己已","鳥烏","ぬめ","シツ","ソン"];
 function cmpHTML(rv,dr){ const row=(lbl,[n,c],cls)=>`<div class="cmp"><span>${esc(lbl)}</span><div class="barbg"><i class="${cls}" style="width:${pct(c,n)}%"></i></div><b class="num">${n?pct(c,n)+"%":"—"}</b><small>${esc(t("nq",{n}))}</small></div>`;
   return row(t("withReview"),rv,"a")+row(t("noReview"),dr,"b"); }
 function cmpNote(rv,dr){ if(rv[0]>=3&&dr[0]>=3){ const d=pct(rv[1],rv[0])-pct(dr[1],dr[0]); if(d>0) return {text:t("reviewWins",{d}),good:true}; } return {text:t("reviewTip"),good:false}; }
@@ -910,15 +956,15 @@ const HB={
       B.innerHTML=`<div class="hbcard"><h3>${esc(t("hbAllSet"))}</h3><p>${esc(t("hbStartFrom",{name:st.pl[0].name}))}</p></div>`; }
     else if(st.phase==="play"||st.phase==="result"){ const a=st.cur,p=st.pl[a];
       $("#hbHead").textContent=P===1?t("hbVsSolo"):t("hbVs",{a:p.name,b:st.pl[this.target(a)].name});
-      const hist=p.hist.map((h,i)=>`<div class="hrow${i===p.hist.length-1&&st.phase==="result"?" last":""}"><span class="n num">${i+1}</span><span class="g num">${h.g}</span><span class="r">${t("hbHB",{h:h.h,b:h.b})}</span></div>`).join("");
+      const hist=p.hist.map((h,i)=>`<div class="hrow${i===p.hist.length-1&&st.phase==="result"?" last":""}"><span class="n num">${i+1}</span><span class="g num">${h.g}</span><span class="r">${sbHTML(h.h,h.b,D)}</span></div>`).join("");
       const res=st.phase==="result"&&st.res?`<div class="hbres pop">${t("hbHB",{h:st.res.h,b:st.res.b})}</div>`:"";
       B.innerHTML=`<div class="hbcard" style="padding:8px 12px">${P>1?`<p style="margin:0">${esc(t("hbTurn",{name:p.name}))}</p>`:""}${st.phase==="result"?res:boxes(st.input,false)}</div>`
         +`<div class="memo"><h4>${esc(t("memo"))}</h4><div class="mrow">${p.memo.map((m,i)=>`<button class="num${m===1?" x":m===2?" o":""}" data-memo="${i}">${i}</button>`).join("")}</div></div>`
-        +(p.hist.length?`<div class="hist"><h4>${esc(t("hbHist"))}</h4>${hist}</div>`:""); }
+        +`<p class="legend">${t("hbLegend")}</p>`+(p.hist.length?`<div class="hist"><h4>${esc(t("hbHist"))}</h4>${hist}</div>`:""); }
     else if(st.phase==="win"){ const p=st.pl[st.cur]; $("#hbHead").textContent=t("tHb");
       B.innerHTML=`<div class="hbcard"><p style="font-size:44px;margin:0">🎉</p><h3>${esc(P===1?t("hbSolo",{n:p.hist.length}):t("hbWin",{name:p.name}))}</h3>${P>1?`<p>${esc(t("hbWinSub",{n:p.hist.length}))}</p>`:""}
         <div class="cmph">${esc(t("secrets"))}</div><div class="secrets">${P===1?`<span><b class="num">${st.pl[0].secret}</b></span>`:st.pl.map(x=>`<span>${esc(x.name)}<b class="num">${x.secret}</b></span>`).join("")}</div></div>`
-        +`<div class="hist"><h4>${esc(t("hbHist"))}</h4>${p.hist.map((h,i)=>`<div class="hrow"><span class="n num">${i+1}</span><span class="g num">${h.g}</span><span class="r">${t("hbHB",{h:h.h,b:h.b})}</span></div>`).join("")}</div>`; }
+        +`<div class="hist"><h4>${esc(t("hbHist"))}</h4>${p.hist.map((h,i)=>`<div class="hrow"><span class="n num">${i+1}</span><span class="g num">${h.g}</span><span class="r">${sbHTML(h.h,h.b,D)}</span></div>`).join("")}</div>`; }
     paintIcons(B); this.dock(); },
   dock(){ if(mode!=="hb") return; if(this.pane.dataset.v==="setup") return setDock(`<button class="btn primary big" data-act="start"><i class="ic" data-ic="play"></i>${esc(t("start"))}</button>`);
     const st=this.st; if(!st) return; const used=new Set(st.input.split(""));
@@ -948,11 +994,13 @@ const HB={
     const sec=st.pl[this.target(st.cur)].secret; let h=0,b=0; for(let i=0;i<g.length;i++){ if(g[i]===sec[i]) h++; else if(sec.includes(g[i])) b++; }
     p.hist.push({g,h,b}); st.input=""; st.res={h,b};
     if(h===st.D){ st.phase="win"; sfx.win(); if(st.P===1){ const bm=store.get("b_hb_best",{}); if(!bm[st.D]||p.hist.length<bm[st.D]){ bm[st.D]=p.hist.length; store.set("b_hb_best",bm); toast(t("newBest")); } } }
-    else { (h||b)?sfx.hit():sfx.tap(); st.phase=st.P===1?"play":"result"; if(st.P===1) toast(`${g} → ${h} Hit ${b} Blow`); }
+    else { (h||b)?sfx.hit():sfx.tap(); st.phase=st.P===1?"play":"result"; if(st.P===1) toast(`${g} → ${h}S ${b}B`); }
     this.render(); },
   memo(i){ const st=this.st; if(!st) return; const p=st.pl[st.cur]; p.memo[i]=(p.memo[i]+1)%3; sfx.tap(); this.render(); },
   quit(){ this.st=null; this.view("setup"); this.refresh(); }
 };
+
+function sbHTML(h,b,D){ const dots=(n,c)=>[...Array(D).keys()].map(i=>`<i class="${i<n?c:""}"></i>`).join(""); return `<span class="sb"><em class="s">S</em>${dots(h,"s")}<em class="b">B</em>${dots(b,"b")}</span>`; }
 
 /* =========================================================
    時計
@@ -977,7 +1025,7 @@ const CLK={
     $("#clBestLbl").textContent=t("bestOf",{k:`${t(kl)}・${t(ll)}`}); $("#clBest").textContent=b??"—"; },
   face(){ const svg=$("#clSvg"); let h=`<circle cx="100" cy="100" r="96" fill="var(--panel)" stroke="var(--strong)" stroke-width="4"/>`;
     for(let i=0;i<60;i++){ const a=i*6*Math.PI/180, r1=i%5?88:83, r2=92; h+=`<line x1="${100+r1*Math.sin(a)}" y1="${100-r1*Math.cos(a)}" x2="${100+r2*Math.sin(a)}" y2="${100-r2*Math.cos(a)}" stroke="var(--ink)" stroke-width="${i%5?1:2.4}" stroke-linecap="round"/>`; }
-    for(let n=1;n<=12;n++){ const a=n*30*Math.PI/180; h+=`<text x="${100+70*Math.sin(a)}" y="${100-70*Math.cos(a)+6.5}" text-anchor="middle" font-size="19" font-family="Barlow Condensed,sans-serif" font-weight="700" fill="var(--ink)">${n}</text>`; }
+    for(let n=1;n<=12;n++){ const a=n*30*Math.PI/180; h+=`<text x="${100+70*Math.sin(a)}" y="${100-70*Math.cos(a)+6.5}" text-anchor="middle" font-size="19" font-family="Fredoka,sans-serif" font-weight="600" fill="var(--ink)">${n}</text>`; }
     h+=`<line id="hH" x1="100" y1="100" x2="100" y2="52" stroke="var(--g1)" stroke-width="8" stroke-linecap="round"/><line id="hM" x1="100" y1="100" x2="100" y2="24" stroke="var(--g0)" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="6" fill="var(--strong)"/>`;
     svg.innerHTML=h; },
   hands(total){ total=((total%720)+720)%720; const m=total%60; const am=m*6, ah=total/2;
