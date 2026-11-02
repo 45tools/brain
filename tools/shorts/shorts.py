@@ -18,15 +18,9 @@ END = {"ja": ("無料・広告なし・インストール不要", ["勉強のあ
 
 L = {  # 読み上げ（字幕も同じ文）
  "count": {
-  "ja": ["45 Brain、マス数え。塗られたマスは、いくつ？", "マスの数や塗り方を選んで、スタート。時間制限はありません。", "数えたマスは、タップで印をつけられます。",
-         "答えたあと、見直すかどうかを選べます。", "答え合わせでは、10個ずつ番号がつきます。", "文字モードでは、毛の中にまざった、手を数えます。",
-         "見直したときと、しなかったときの正答率を、くらべられます。", "45 Brain。無料・広告なしで、ブラウザですぐ遊べます。"],
-  "en": ["45 Brain: Count. How many squares are filled?", "Pick the grid size and pattern, then start. There's no time limit.", "Tap squares to mark the ones you've counted.",
-         "After answering, choose whether to check again.", "The answer numbers the squares in groups of ten.", "In Characters mode, find the look-alike characters.",
-         "Compare your accuracy with and without checking.", "45 Brain. Free, no ads, right in your browser."],
-  "zh-Hant": ["45 Brain，數格子。塗色的格子有幾格？", "選好格子數和塗法就開始，沒有時間限制。", "數過的格子，點一下就能做記號。",
-         "作答後，可以選擇要不要再檢查。", "對答案時，每10個會標上編號。", "文字模式要數出混在「毛」裡的「手」。",
-         "可以比較有檢查和沒檢查時的正確率。", "45 Brain，免費、無廣告，用瀏覽器馬上就能玩。"]},
+  "ja": ["45 Brain、マス数え。塗られたマスは、いくつ？", "マスの数や塗り方を選んで、スタート。時間制限はありません。", "数えたマスは、タップで印をつけられます。", "答え合わせでは、10個ずつ番号がつくので、どこで数えまちがえたかが分かります。", "文字モードでは、毛の中にまざった、手を数えます。", "45 Brain。無料・広告なしで、ブラウザですぐ遊べます。"],
+  "en": ["45 Brain: Count. How many squares are filled?", "Pick the grid size and pattern, then start. There's no time limit.", "Tap squares to mark the ones you've counted.", "The answer numbers the squares in groups of ten, so you can see where you slipped.", "In Characters mode, find the look-alike characters.", "45 Brain. Free, no ads, right in your browser."],
+  "zh-Hant": ["45 Brain，數格子。塗色的格子有幾格？", "選好格子數和塗法就開始，沒有時間限制。", "數過的格子，點一下就能做記號。", "對答案時每10個標上編號，一眼看出哪裡數錯。", "文字模式要數出混在「毛」裡的「手」。", "45 Brain，免費、無廣告，用瀏覽器馬上就能玩。"]},
  "flash": {
   "ja": ["45 Brain、瞬間記憶。光った場所、おぼえられる？", "一瞬だけ光るマスの場所をおぼえて、タップします。", "クリアすると、国旗のボーナス問題。",
          "順番モードでは、光った順番どおりにタップ。", "レベルが上がるほど、数が増えていきます。", "45 Brain。無料・広告なしで、ブラウザですぐ遊べます。"],
@@ -93,27 +87,17 @@ async def count(s, lang):
     for i in filled[:6]:
         await s.tap(f'#cntGrid [data-c="{i}"]', after=0.12)
     await s.wait_speech(0.2)
-    await s.scene("review")
-    await s.keys(str(ans + 1)); await s.tap('#dock [data-k="ok"]', after=0.2)
-    await s.say(T[3]); await s.hold(1.0)
-    await s.tap('#dock [data-act="review"]', after=0.3)
-    await s.wait_speech()
-    for _ in str(ans + 1): await s.tap('#dock [data-k="del"]', after=0.12)
+    await s.scene("answer")
     await s.keys(str(ans)); await s.tap('#dock [data-k="ok"]', after=0.3)
-    await s.say(T[4]); await s.wait_speech(0.6)
+    await s.say(T[3]); await s.wait_speech(0.8)
     await s.scene("kanji")
     await s.tap('#cntQuit', after=0.3)
     await s.tap('#cntStyle [data-val="kanji"]', after=0.3)
     await s.tap('#dock [data-act="start"]', after=0.2)
-    await s.say(T[5]); await s.hold(1.5)
+    await s.say(T[4]); await s.hold(1.5)
     kans = await s.js("__b.MODS.count.q.ans")
-    await s.keys(str(kans - 1)); await s.tap('#dock [data-k="ok"]', after=0.2); await s.tap('#dock [data-act="submit"]', after=0.3)
-    await s.wait_speech(0.8)
-    await s.scene("compare")
-    await s.tap('#cntQuit', after=0.3)
-    await s.page.frame(name="app").evaluate("document.querySelector('#cntStats').scrollIntoView({block:'center'})")
-    await s.say(T[6]); await s.hold(0.3)
-    await s.move_to(540, 1150, 12)
+    await s.keys(str(kans)); await s.tap('#dock [data-k="ok"]', after=0.3)
+    await s.wait_speech(1.0)
     await ending(s, "count", lang)
 
 
