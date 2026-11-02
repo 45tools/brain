@@ -115,7 +115,8 @@ class Studio:
 
     async def say(self, text, caption=None, wait_prev=True):
         if wait_prev: await self.wait_speech()
-        p, d = await tts(text, self.lang)
+        spoken = text.replace("数当て", "かずあて") if self.lang == "ja" else text  # 読み方の指定
+        p, d = await tts(spoken, self.lang)
         await self.page.evaluate("t=>window.__cap(t)", caption if caption is not None else text)
         self.cues.append((self.frame / FPS, p)); self.speech_end = self.frame + math.ceil((d + 0.25) * FPS)
 
