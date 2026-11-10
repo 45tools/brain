@@ -401,11 +401,12 @@ body[data-mode="home"] #homeBtn{display:none}
 <script>const SOLO="flash";</script>
 <script>
 /* ===== 設定 ===== */
-const APP_VER="2026.11.03-2";
+const APP_VER="2026.11.10-1";
 const SUPPORT_URL="https://ofuse.me/45tools";
 // 使い方のリンク（公開後に記事・動画のURLを入れる。空なら表示しない）
-const GUIDE={ note:"https://note.com/45tools/n/n5ad58d8789ed",  // 日本語：note記事
-  video:{ count:{en:"https://youtube.com/shorts/q1eZObR_tMQ",zh:"https://youtube.com/shorts/yEQ2LzAw5L8"}, flash:{en:"https://youtube.com/shorts/X5I-4jo6b60",zh:"https://youtube.com/shorts/BPPNVAaMJHw"}, hb:{en:"https://youtube.com/shorts/5J-_csHlXiw",zh:"https://youtube.com/shorts/kS5PPpUk6OA"}, add:{en:"",zh:""}, clock:{en:"",zh:""} } };  // 英語・中国語：各ゲームのショート
+const GUIDE={ note:"https://note.com/45tools/n/n5ad58d8789ed",  // 日本語：note記事（ゲーム別の記事があれば notes を優先）
+  notes:{ add:"https://note.com/45tools/n/nb3b3a3233ada" },
+  video:{ count:{en:"https://youtube.com/shorts/q1eZObR_tMQ",zh:"https://youtube.com/shorts/yEQ2LzAw5L8"}, flash:{en:"https://youtube.com/shorts/X5I-4jo6b60",zh:"https://youtube.com/shorts/BPPNVAaMJHw"}, hb:{en:"https://youtube.com/shorts/5J-_csHlXiw",zh:"https://youtube.com/shorts/kS5PPpUk6OA"}, add:{en:"",zh:"https://youtube.com/shorts/T6sHjrRqLp8"}, clock:{en:"",zh:""} } };  // 英語・中国語：各ゲームのショート
 // ゲームの一覧（並び順＝ホームの順）。rel は公開日時（この時刻になるとホームに出る）。null は最初から
 const GAMES=[
   {id:"count",ic:"cgrid",c:"--c-count",rel:null},
@@ -679,7 +680,7 @@ $("#menuBtn").onclick=()=>openMenu($("#menu").hidden); $("#scrim").onclick=()=>o
 function paintToggles(){ const s=store.get("b_snd",true),v=store.get("b_tts",true);
   $("#sndV").textContent=t(s?"on":"off"); $("#sndV").classList.toggle("on",s); $("#ttsV").textContent=t(v?"on":"off"); $("#ttsV").classList.toggle("on",v); }
 // 使い方：日本語はnote記事、英語・中国語はそのゲームのショート
-function guideURL(){ if(lang==="ja") return GUIDE.note; const v=GUIDE.video[mode]; if(!v) return ""; return lang==="en"?v.en:(v.zh||v.en); }
+function guideURL(){ if(lang==="ja") return (GUIDE.notes&&GUIDE.notes[mode])||GUIDE.note; const v=GUIDE.video[mode]; if(!v) return ""; return lang==="en"?v.en:(v.zh||v.en); }
 function paintGuide(){ const u=guideURL(),a=$("#guideLink"); a.hidden=!u; if(u) a.href=u; $("#guideLbl").textContent=t(lang==="ja"?"guideNote":"guideVideo"); }
 $("#sndBtn").onclick=()=>{ store.set("b_snd",!store.get("b_snd",true)); paintToggles(); sfx.tap(); };
 $("#ttsBtn").onclick=()=>{ const v=!store.get("b_tts",true); store.set("b_tts",v); paintToggles(); if(v) speak("Japan"); };
