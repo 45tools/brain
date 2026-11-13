@@ -35,12 +35,13 @@
 body[data-mode="add"]{--accent:var(--c-add)} body[data-mode="flash"]{--accent:var(--c-flash)}
 body[data-mode="hb"]{--accent:var(--c-hb)} body[data-mode="clock"]{--accent:var(--c-clock)} body[data-mode="kesi"]{--accent:var(--c-ks)}
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{touch-action:manipulation;-webkit-text-size-adjust:100%;background:var(--bg)}
+html{overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-adjust:100%;background:var(--bg)}
 html,body{margin:0}
-body{min-height:100vh;padding:calc(env(safe-area-inset-top,0px) + 8px) env(safe-area-inset-right) 0 env(safe-area-inset-left);background:var(--bg);color:var(--ink);
+body{min-height:100vh;min-height:100dvh;padding:calc(env(safe-area-inset-top,0px) + 8px) env(safe-area-inset-right) 0 env(safe-area-inset-left);background:var(--bg);color:var(--ink);
   background-image:radial-gradient(var(--dot) 1.4px,transparent 1.6px);background-size:22px 22px;background-attachment:fixed;
   font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang TC","PingFang SC",system-ui,sans-serif;overscroll-behavior:none}
 button,select,input,textarea{font:inherit;color:inherit}
+html.fit,html.fit body{height:100%;overflow:hidden}
 button,select,label{touch-action:manipulation;cursor:pointer}
 [hidden]{display:none!important}
 .num{font-family:"Fredoka","M PLUS Rounded 1c",system-ui,sans-serif;font-weight:600;font-variant-numeric:tabular-nums}
@@ -401,7 +402,7 @@ body[data-mode="home"] #homeBtn{display:none}
 <script>const SOLO="clock";</script>
 <script>
 /* ===== 設定 ===== */
-const APP_VER="2026.11.10-2";
+const APP_VER="2026.11.13-1";
 const SUPPORT_URL="https://ofuse.me/45tools";
 // 使い方のリンク（公開後に記事・動画のURLを入れる。空なら表示しない）
 const GUIDE={ note:"https://note.com/45tools/n/n5ad58d8789ed",  // 日本語：note記事（ゲーム別の記事があれば notes を優先）
@@ -646,7 +647,7 @@ function loadGame(id){ if(MODS[id]) return Promise.resolve();
   const s=document.createElement("script"); s.src=`games/${id}.js?v=${APP_VER}`; s.onerror=()=>{ delete BRAIN.pending[id]; rej(new Error("load")); }; document.head.append(s);
   return pr; }
 
-function showPane(p){ $$("#wrap > [data-pane]").forEach(s=>s.classList.toggle("act",s.dataset.pane===p)); }
+function showPane(p){ $$("#wrap > [data-pane]").forEach(s=>s.classList.toggle("act",s.dataset.pane===p)); if(typeof fitCheck==="function") fitCheck(); }
 function barTitle(){ const g=gameOf(mode); $("#barTitle").innerHTML=g?`<i class="gdot"></i><span>${esc(t(TNAME[g.id]))}</span>`:""; }
 const TNAME={count:"tCount",add:"tAdd",flash:"tFlash",hb:"tHb",clock:"tClock"};
 let navSeq=0;
@@ -660,6 +661,9 @@ async function setMode(m,push){ const g=gameOf(m); const my=++navSeq;
   mode=m; document.body.dataset.mode=m; showPane(m); barTitle(); store.set("b_mode",m);
   if(!SOLO&&location.hash!=="#"+m) history[push?"pushState":"replaceState"](null,"","#"+m);
   MODS[m].refresh&&MODS[m].refresh(); MODS[m].dock(); window.scrollTo(0,0); paintGuide(); }
+var _fitT=0; function fitCheck(){ cancelAnimationFrame(_fitT); _fitT=requestAnimationFrame(()=>{ const de=document.documentElement; de.classList.remove("fit"); const fit=de.scrollHeight<=window.innerHeight+1; if(fit&&window.scrollY) window.scrollTo(0,0); de.classList.toggle("fit",fit); }); }
+addEventListener("resize",fitCheck); addEventListener("orientationchange",fitCheck); addEventListener("load",fitCheck);
+try{ const ro=new ResizeObserver(fitCheck); ro.observe(document.getElementById("wrap")); }catch(e){}
 function renderHome(){ const list=GAMES.filter(g=>isOpen(g)||PREVIEW);
   $("#apps").innerHTML=list.map(g=>{ const soon=!isOpen(g);
     return `<li><a class="app${soon?" soon":""}" href="#${g.id}" data-go="${g.id}"><span class="ai" style="--c:var(${g.c})">${TILE[g.id]||""}${isNew(g)?`<b class="new">NEW</b>`:""}</span><span class="an">${esc(t(TNAME[g.id]))}</span>${soon?`<span class="when">${esc(fmtWhen(g))}</span>`:""}</a></li>`; }).join(""); }
