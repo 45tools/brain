@@ -6,7 +6,7 @@ import asyncio, os
 from playwright.async_api import async_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-COLORS = {"count": "#3D7BFF", "flash": "#FF8F1F", "hb": "#9B5CF6", "add": "#1DB765", "clock": "#FF4F8B"}
+COLORS = {"count": "#3D7BFF", "flash": "#FF8F1F", "hb": "#9B5CF6", "add": "#1DB765", "clock": "#FF4F8B", "pair": "#E89A00"}
 
 def svg(art, col):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
