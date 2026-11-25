@@ -20,14 +20,19 @@ GAMES = [  # id, 英語名（ホーム画面の名前）, 日本語名, 説明
     ("add", "Add", "たし算", "あといくつで目標の数？ ビー玉やぶたの絵で数えるたし算。"),
     ("clock", "Clock", "とけい", "時計の読み方・針の合わせ方・何分後を練習。"),
     ("pair", "Pairs", "神経衰弱", "同じ絵のカードをそろえる記憶ゲーム。自分の写真でも、コンピューターや家族とも。"),
+    ("read", "Read", "速読", "フラッシュ読み・高速表示・視野を広げる・読む速さの測定。内容のクイズつき。"),
 ]
 BRAND_DESC = "勉強のあいまに脳をきたえる無料ミニゲーム。インストール不要・広告なし。"
 
-shell = open(S("src", "shell.html"), encoding="utf-8").read()
-# 簡体字：繁体字の文言から作る
-a = shell.index('"zh-Hant":{'); b = shell.index("/*ZH*/")
-zh = OpenCC("tw2sp").convert(shell[a:b].rstrip()).replace('"zh-Hant":{', '"zh":{', 1)
-shell = shell[:b] + "," + zh + "\n" + shell[b + len("/*ZH*/"):]
+CC = OpenCC("tw2sp")
+def add_zh(src):
+    """簡体字：繁体字の "zh-Hant":{ … から /*ZH*/ までを変換して "zh":{ … として足す（印がなければそのまま）"""
+    if "/*ZH*/" not in src: return src
+    a = src.index('"zh-Hant":{'); b = src.index("/*ZH*/")
+    zh = CC.convert(src[a:b].rstrip()).replace('"zh-Hant":{', '"zh":{', 1)
+    return src[:b] + "," + zh + "\n" + src[b + len("/*ZH*/"):]
+
+shell = add_zh(open(S("src", "shell.html"), encoding="utf-8").read())
 ver = re.search(r'APP_VER="([^"]+)"', shell).group(1)
 
 def page(base, d, title, short, desc, solo):
@@ -52,7 +57,7 @@ for gid, en, ja, desc in GAMES:
     open(S(gid, "index.html"), "w", encoding="utf-8").write(
         page('<base href="../">\n', gid + "/", f"{ja}｜45 Brain", f"45 {en}", desc + " " + BRAND_DESC, gid))
     open(S(gid, "manifest.json"), "w", encoding="utf-8").write(manifest(f"45 {en}（{ja}）", f"45 {en}", "../"))
-    shutil.copy(S("src", "games", gid + ".js"), S("games", gid + ".js"))
+    open(S("games", gid + ".js"), "w", encoding="utf-8").write(add_zh(open(S("src", "games", gid + ".js"), encoding="utf-8").read()))
     files += [f"{gid}/", f"{gid}/index.html", f"games/{gid}.js", f"{gid}/icon-180.png"]
 files += ["flags/" + f for f in sorted(os.listdir(S("flags"))) if f.endswith(".svg")]
 
