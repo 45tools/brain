@@ -129,7 +129,7 @@ const PR={
       this.fb(st.combo>=2?t("prCombo",{n:st.combo}):multi?t("prAgain",{p:st.players[st.cur].n}):t("prMatch"),"okc");
       if(!st.left){ st.done=true; await wait(800); if(st!==this.st) return; return this.finish(); } }
     else { await wait(950); if(st!==this.st) return;
-      A.up=B.up=false; this.upd(a); this.upd(b); st.open=[]; st.combo=0; st.miss++;
+      A.up=B.up=false; this.upd(a); this.upd(b); sfx.back(); st.open=[]; st.combo=0; st.miss++;
       if(multi){ st.cur=(st.cur+1)%st.players.length; this.paintPl(); this.fb(t("prTurn",{p:st.players[st.cur].n})); } else this.fb("");
       if(this.s.swap==="1"&&st.miss%3===0){ await this.swap(); if(st!==this.st) return; } }
     st.busy=false;

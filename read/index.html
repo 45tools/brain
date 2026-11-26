@@ -457,7 +457,7 @@ body[data-mode="home"] #homeBtn{display:none}
 <script>const SOLO="read";</script>
 <script>
 /* ===== 設定 ===== */
-const APP_VER="2026.11.26-2";
+const APP_VER="2026.11.27-1";
 const SUPPORT_URL="https://ofuse.me/45tools";
 // 使い方のリンク（公開後に記事・動画のURLを入れる。空なら表示しない）
 const GUIDE={ note:"https://note.com/45tools/n/n5ad58d8789ed",  // 日本語：note記事（ゲーム別の記事があれば notes を優先）
@@ -641,8 +641,9 @@ function tone(f,d,type="sine",v=.15,delay=0){ if(!store.get("b_snd",true)) retur
   try{ const o=a.createOscillator(),g=a.createGain(); o.type=type; o.frequency.value=f; const t0=a.currentTime+delay;
   g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(v,t0+.012); g.gain.exponentialRampToValueAtTime(.0001,t0+d);
   o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0+d+.03); }catch(e){} }
-const sfx={ok(){tone(880,.12,"sine",.18);tone(1320,.2,"sine",.15,.09)},ng(){tone(220,.28,"square",.07);tone(165,.3,"square",.06,.1)},tap(){tone(700,.05,"triangle",.07)},
-  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,"sine",.15,i*.1))},flash(){tone(1046,.12,"sine",.1)},hit(){tone(988,.1,"triangle",.12)}};
+const sfx={ok(){tone(880,.12,"sine",.18);tone(1320,.2,"sine",.15,.09)},ng(){tone(311,.14,"triangle",.17);tone(233,.26,"triangle",.15,.11)},tap(){tone(700,.05,"triangle",.07)},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,"sine",.15,i*.1))},flash(){tone(1046,.12,"sine",.1)},hit(){tone(988,.1,"triangle",.12)},
+  back(){tone(392,.09,"triangle",.08);tone(294,.13,"triangle",.07,.07)}};
 document.addEventListener("pointerdown",()=>ac(),{once:true});
 function speak(txt){ if(!store.get("b_tts",true)||!("speechSynthesis" in window)||!txt) return;
   try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.lang="en-US"; u.rate=.92;
